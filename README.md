@@ -9,3 +9,7 @@ O código foi projetado para filtrar a resolução dos vídeos disponíveis e, c
 Para garantir nomes de arquivos válidos no Windows, o código também remove caracteres inválidos do título do vídeo antes de salvar o arquivo.
 
 Experimente este aplicativo e aproveite para baixar seus vídeos e músicas favoritas do YouTube de forma rápida e fácil! 🚀
+
+Atualização 1.0 19/02/2024
+Código mais limpo e melhorado
+Agora é possível ver o titúlo do video antes de fazer o dowload
