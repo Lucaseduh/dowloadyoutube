@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from tkinter.ttk import Combobox
 from pytube import YouTube
 
@@ -11,7 +11,20 @@ def remover_caracteres_invalidos(filename):
         filename = filename.replace(char, '')
     return filename
 
-def fazer_download(url, pasta_saida, formato, resolucao):
+def mostrar_titulo(event=None):
+    try:
+        url = entrada_url.get()
+        yt = YouTube(url)
+        titulo_video.config(text=yt.title)
+    except Exception as e:
+        titulo_video.config(text="Erro ao recuperar o título do vídeo.")
+
+def fazer_download():
+    url = entrada_url.get()
+    pasta_saida = label_pasta_saida.cget("text")[18:].strip()  # Remove espaços em branco no início e no final
+    formato = formato_var.get()
+    resolucao = resolucao_var.get()
+
     try:
         yt = YouTube(url)
 
@@ -40,21 +53,13 @@ def fazer_download(url, pasta_saida, formato, resolucao):
             video_stream.download(output_path=pasta_saida, filename=nome_arquivo)
 
             if formato == "mp4":
-                print("Download em MP4 concluído com sucesso!")
+                messagebox.showinfo("Download Concluído", "Download em MP4 concluído com sucesso!")
             else:
-                print("Download em MP3 concluído com sucesso!")
+                messagebox.showinfo("Download Concluído", "Download em MP3 concluído com sucesso!")
         else:
-            print("Não foi possível encontrar o vídeo ou áudio na resolução selecionada.")
+            messagebox.showerror("Erro", "Não foi possível encontrar o vídeo ou áudio na resolução selecionada.")
     except Exception as e:
-        print("Ocorreu um erro durante o download:", str(e))
-
-def ao_clicar_em_fazer_download():
-    url = entrada_url.get()
-    pasta_saida = label_pasta_saida.cget("text")[18:].strip()  # Remove espaços em branco no início e no final
-    formato = formato_var.get()
-    resolucao = resolucao_var.get()
-
-    fazer_download(url, pasta_saida, formato, resolucao)
+        messagebox.showerror("Erro", f"Ocorreu um erro durante o download: {str(e)}")
 
 def ao_clicar_em_escolher_pasta_saida():
     pasta_selecionada = filedialog.askdirectory()
@@ -63,13 +68,19 @@ def ao_clicar_em_escolher_pasta_saida():
 
 app = tk.Tk()
 app.title("Download de Vídeos")
-app.geometry("400x400")
+app.geometry("400x450")
+
+titulo_video = tk.Label(app, text="Título do vídeo")
+titulo_video.pack(pady=10)
 
 label_url = tk.Label(app, text="Insira a URL do vídeo:")
-label_url.pack(pady=10)
+label_url.pack()
 
 entrada_url = tk.Entry(app, width=40)
 entrada_url.pack()
+
+# Atualiza o título do vídeo ao inserir uma URL
+entrada_url.bind("<KeyRelease>", mostrar_titulo)
 
 label_formato = tk.Label(app, text="Escolha o formato do download:")
 label_formato.pack(pady=10)
@@ -103,7 +114,7 @@ botao_pasta_saida.pack(pady=10)
 label_pasta_saida = tk.Label(app, text="Nenhuma pasta selecionada.")
 label_pasta_saida.pack()
 
-botao_fazer_download = tk.Button(app, text="Fazer Download", command=ao_clicar_em_fazer_download)
+botao_fazer_download = tk.Button(app, text="Fazer Download", command=fazer_download)
 botao_fazer_download.pack(pady=20)
 
 app.mainloop()
