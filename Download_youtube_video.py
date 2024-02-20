@@ -3,6 +3,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter.ttk import Combobox
 from pytube import YouTube
+from PIL import Image, ImageTk
+import io
+import urllib.request
 
 def remover_caracteres_invalidos(filename):
     # Remove caracteres inválidos em nomes de arquivo no Windows
@@ -10,14 +13,6 @@ def remover_caracteres_invalidos(filename):
     for char in invalid_chars:
         filename = filename.replace(char, '')
     return filename
-
-def mostrar_titulo(event=None):
-    try:
-        url = entrada_url.get()
-        yt = YouTube(url)
-        titulo_video.config(text=yt.title)
-    except Exception as e:
-        titulo_video.config(text="Erro ao recuperar o título do vídeo.")
 
 def fazer_download():
     url = entrada_url.get()
@@ -66,21 +61,37 @@ def ao_clicar_em_escolher_pasta_saida():
     if pasta_selecionada:
         label_pasta_saida.config(text=f"Pasta selecionada: {pasta_selecionada}")
 
+def mostrar_detalhes_video(event):
+    url = entrada_url.get()
+    try:
+        yt = YouTube(url)
+        titulo_video.config(text=yt.title)
+
+        # Carregar a miniatura do vídeo
+        img_data = urllib.request.urlopen(yt.thumbnail_url).read()
+        imagem = Image.open(io.BytesIO(img_data))
+        imagem.thumbnail((120, 120))
+        imagem = ImageTk.PhotoImage(imagem)
+        label_imagem.config(image=imagem)
+        label_imagem.image = imagem  # Garante que a imagem não seja coletada pelo garbage collector
+    except Exception as e:
+        messagebox.showerror("Erro", f"Ocorreu um erro ao carregar os detalhes do vídeo: {str(e)}")
+
 app = tk.Tk()
 app.title("Download de Vídeos")
-app.geometry("400x450")
+app.geometry("400x500")
 
 titulo_video = tk.Label(app, text="Título do vídeo")
 titulo_video.pack(pady=10)
+
+label_imagem = tk.Label(app)
+label_imagem.pack(pady=10)
 
 label_url = tk.Label(app, text="Insira a URL do vídeo:")
 label_url.pack()
 
 entrada_url = tk.Entry(app, width=40)
 entrada_url.pack()
-
-# Atualiza o título do vídeo ao inserir uma URL
-entrada_url.bind("<KeyRelease>", mostrar_titulo)
 
 label_formato = tk.Label(app, text="Escolha o formato do download:")
 label_formato.pack(pady=10)
@@ -116,5 +127,7 @@ label_pasta_saida.pack()
 
 botao_fazer_download = tk.Button(app, text="Fazer Download", command=fazer_download)
 botao_fazer_download.pack(pady=20)
+
+entrada_url.bind("<KeyRelease>", mostrar_detalhes_video)
 
 app.mainloop()
