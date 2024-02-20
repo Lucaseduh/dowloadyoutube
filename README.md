@@ -13,3 +13,6 @@ Experimente este aplicativo e aproveite para baixar seus vídeos e músicas favo
 Atualização 1.0 19/02/2024
 Código mais limpo e melhorado
 Agora é possível ver o titúlo do video antes de fazer o dowload
+
+Atualização 1.1 20/02/2024
+Agora é possível visualizar a imagem do vídeo que está sendo baixado
