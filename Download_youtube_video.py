@@ -112,3 +112,4 @@ botao_fazer_download.pack(pady=20)
 entrada_url.bind("<KeyRelease>", mostrar_detalhes_video)
 
 app.mainloop()
+
